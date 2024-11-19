@@ -1,3 +1,43 @@
+<?php
+
+
+require_once __DIR__ . '/../Model/User.php';
+
+$user = new User();
+if (!isset($_SESSION['full_name'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$id_user = $_SESSION['id_user'];
+
+if(isset($_POST['submit'])){
+  if($_POST['new_pass'] !== $_POST['confirm_pass']){
+    echo "
+    <script>
+    alert('Password baru dan konfirmasi tidak cocok!');
+    window.location.href='ganti-password.php'; 
+    </script>";
+  }
+
+  $result = $user->updatePassword($id_user, $_POST['old_pass'], $_POST['new_pass']);
+  if(gettype($result) === 'string'){
+    echo "
+    <script>
+    alert('$result');
+    window.location.href='ganti-password.php';
+    </script>";
+  }else{
+    echo "
+    <script>
+    alert('Selamat $result[full_name], password berhasil diubah!');
+    window.location.href='index-akun.php';
+    </script>";
+  }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,6 +45,8 @@
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>Blank Page &mdash; Stisla</title>
+  <link rel="icon" href="../assets/img/favicon/logo-favicon.png">
+
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="../assets/modules/bootstrap/css/bootstrap.min.css">
@@ -51,7 +93,7 @@
           </div>
 
           <div class="section-body">
-            <h2 class="section-title">Hi, Admin!</h2>
+            <h2 class="section-title">Hi, <?= $_SESSION['full_name'] ?>!</h2>
             <p class="section-lead">
               Ganti Pasword kamu dengan aman
             </p>
@@ -65,7 +107,7 @@
 
               <div class="col-12 col-md-12 col-lg-6">
                 <div class="card profile-widget">
-                  <form method="post" class="needs-validation" novalidate="">
+                  <form action="" method="post" class="needs-validation" novalidate="">
                     <div class="card-header">
                       <h4>Ganti Password</h4>
                     </div>
@@ -73,28 +115,28 @@
                       <div class="row">
                         <div class="form-group col-12">
                           <label>Password Lama</label>
-                          <input type="password" class="form-control" value="Ujang" required="">
+                          <input type="password" name="old_pass" class="form-control" required="">
                           <div class="invalid-feedback">
                             Please fill this input
                           </div>
                         </div>
                         <div class="form-group col-12">
                           <label>Password Baru</label>
-                          <input type="password" class="form-control" value="Ujang" required="">
+                          <input type="password" name="new_pass" class="form-control" required="">
                           <div class="invalid-feedback">
                             Please fill this input
                           </div>
                         </div>
                         <div class="form-group col-12">
                           <label>Konfirmasi Password Baru</label>
-                          <input type="password" class="form-control" value="Ujang" required="">
+                          <input type="password" name="confirm_pass" class="form-control" required="">
                           <div class="invalid-feedback">
                             Please fill this input
                           </div>
                         </div>
                       </div>
                       <div class="card-footer text-right">
-                        <button class="btn btn-primary">Simpan Perubahan</button>
+                        <button type="submit" name="submit" class="btn btn-primary">Simpan Perubahan</button>
                       </div>
                   </form>
                 </div>

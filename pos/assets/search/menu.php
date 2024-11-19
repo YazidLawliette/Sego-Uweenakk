@@ -3,42 +3,47 @@
 
 require_once __DIR__ . '/../../DB/Conection.php';
 require_once __DIR__ . '/../../Model/Model.php';
-require_once __DIR__ . '/../../Model/Category.php';
+require_once __DIR__ . '/../../Model/Item.php';
 
 $keyword = $_GET['keyword'];
-$items = new Item();
-$items = $items->search($keyword);
+$menus = new Item();
+$menus = $menus-> search($keyword);
+
+
 
 ?>
 
 
-<div class="table-responsive">
-    <table class="table table-striped">
-        <tr>
-            <th>
-                <div class="custom-checkbox custom-control">
-                    <input type="checkbox" data-checkboxes="mygroup" data-checkbox-role="dad" class="custom-control-input" id="checkbox-all">
-                    <label for="checkbox-all" class="custom-control-label">&nbsp;</label>
-                </div>
-            </th>
-            <th>Nama Categori</th>
-            <th>Action</th>
-        </tr>
-        <?php foreach ($items as $item) : ?>
-            <tr>
-                <td class="">
-                    <div class="custom-checkbox custom-control">
-                        <input type="checkbox" data-checkboxes="mygroup" class="custom-control-input" id="checkbox-1">
-                        <label for="checkbox-1" class="custom-control-label">&nbsp;</label>
-                    </div>
-                </td>
-                <td><?= $item["name"] ?></td>
-                <td class="justify-content-end">
-                    <a href="detail-category.php?id=<?= $item["id"] ?>" class="btn btn-primary mr-1"><i class="far fa-eye"></i> Detail</a>
-                    <a href="edit-category.php?id=<?= $item["id"] ?>" class="btn btn-success mr-1"> <i class="far fa-edit"></i> Edit</a>
-                    <a href="delete-category.php?id=<?= $item["id"] ?>" class="btn btn-danger mr-1"><i class="far fa-trash-alt"></i> Hapus</a>
-                </td>
-            </tr>
-        <?php endforeach ?>
-    </table>
-</div>
+<div id="content_menu" class="table-responsive">
+                      <table class="table table-striped">
+                        <tr>
+                          <th>
+                            <div class="custom-checkbox custom-control">
+                              <!-- <input type="checkbox" data-checkboxes="mygroup" data-checkbox-role="dad" class="custom-control-input" id="checkbox-all">
+                              <label for="checkbox-all" class="custom-control-label">&nbsp;</label> -->
+                            </div>
+                          </th>
+                          <th>Name</th>
+                          <th>Attachment</th>
+                          <th>Price</th>
+                          <!-- <th>Status</th> -->
+                          <th>Action</th>
+                        </tr>
+                        <?php foreach ($menus as $menu) : ?>
+                        <tr>
+                          <td class="p-0 text-center">
+                            <div class="custom-checkbox custom-control">
+                              <input type="checkbox" data-checkboxes="mygroup" class="custom-control-input" id="checkbox-1">
+                              <label for="checkbox-1" class="custom-control-label">&nbsp;</label>
+                            </div>
+                          </td>
+                          <td><?= $menu["name"] ?></td>
+                          <td class="align-middle">
+                            <img alt="image" src="../public/img/items/<?= $menu["attachment"] ?>" class="rounded-circle" width="55" data-toggle="tooltip" title="Fauzi M Noor">
+                          </td>
+                          <td><?= $menu["price"] ?></td>
+                          <!-- <td><div class="badge badge-success"></div></td> -->
+                          <td><a href="#" class="btn btn-secondary">Detail</a></td>
+                        </tr>
+                        <?php endforeach; ?>
+                      </table>

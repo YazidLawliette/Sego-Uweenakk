@@ -1,9 +1,45 @@
+<?php
+
+require_once __DIR__ . '/../Model/Model.php';
+require_once __DIR__ . '/../Model/Category.php';
+require_once __DIR__ . '/../Model/Item.php';
+
+if (!isset($_SESSION['full_name'])) {
+  header("Location: login.php");
+  exit;
+}
+
+$categories = new Category();
+$menus = new Item();
+
+
+$limit = 3; 
+$pageActive = isset($_GET["page"]) ? (int)$_GET["page"] : 1; 
+$key = isset($_GET['keyword']) ? $_GET['keyword'] : '';
+
+$length = count($menus->all($key)); 
+$countPage = ceil($length / $limit);
+
+$offset = ($pageActive - 1) * $limit;
+
+$prev = ($pageActive > 1) ? $pageActive - 1 : 1;
+$next = ($pageActive < $countPage) ? $pageActive + 1 : $countPage;
+
+// Query dengan pagination dan pencarian
+$menus = $menus->all2($offset, $limit, $key);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>&mdash; Menu</title>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="icon" href="../assets/img/favicon/logo-favicon.png">
+
+
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="../assets/modules/bootstrap/css/bootstrap.min.css">
@@ -45,11 +81,11 @@
               <div class="col-12">
                 <div class="card">
                   <div class="card-header">
-                    <h4>Advanced Table</h4>
+                    <h4>Ini dia Menu!!</h4>
                     <div class="card-header-form">
-                      <form>
+                      <form method="GET" action="">
                         <div class="input-group">
-                          <input type="text" class="form-control" placeholder="Search">
+                          <input type="text" class="form-control" placeholder="Search" name="keyword" id="search_menu" value="<?= $key ?>">
                           <div class="input-group-btn">
                             <button class="btn btn-primary"><i class="fas fa-search"></i></button>
                           </div>
@@ -58,22 +94,23 @@
                     </div>
                   </div>
                   <div class="card-body p-0">
-                    <div class="table-responsive">
+                    <div id="content_menu" class="table-responsive">
                       <table class="table table-striped">
                         <tr>
                           <th>
                             <div class="custom-checkbox custom-control">
-                              <input type="checkbox" data-checkboxes="mygroup" data-checkbox-role="dad" class="custom-control-input" id="checkbox-all">
-                              <label for="checkbox-all" class="custom-control-label">&nbsp;</label>
+                              <!-- <input type="checkbox" data-checkboxes="mygroup" data-checkbox-role="dad" class="custom-control-input" id="checkbox-all">
+                              <label for="checkbox-all" class="custom-control-label">&nbsp;</label> -->
                             </div>
                           </th>
-                          <th>Task Name</th>
-                          <th>Progress</th>
-                          <th>Members</th>
-                          <th>Due Date</th>
-                          <th>Status</th>
+                          <th>Name</th>
+                          <th>Attachment</th>
+                          <th>Price</th>
+                          <th>Category</th>
+                          <th>Created at</th>
                           <th>Action</th>
                         </tr>
+                        <?php foreach ($menus as $menu) : ?>
                         <tr>
                           <td class="p-0 text-center">
                             <div class="custom-checkbox custom-control">
@@ -81,86 +118,38 @@
                               <label for="checkbox-1" class="custom-control-label">&nbsp;</label>
                             </div>
                           </td>
-                          <td>Create a mobile app</td>
+                          <td><?= $menu["name_item"] ?></td>
                           <td class="align-middle">
-                            <div class="progress" data-height="4" data-toggle="tooltip" title="100%">
-                              <div class="progress-bar bg-success" data-width="100"></div>
-                            </div>
+                            <img alt="image" src="../public/img/items/<?= $menu["attachment"] ?>" class="rounded-md" width="55" height="55" data-toggle="tooltip" title="Orang">
                           </td>
+                          <td><?= $menu["price"] ?></td>
+                          <td><?= $menu["name_category"] ?></td>
+                          <td><?= $menu["created_at_item"] ?></td>
                           <td>
-                            <img alt="image" src="../assets/img/avatar/avatar-5.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Wildan Ahdian">
+                          <button onclick="modalDetail(<?= $menu['id_item'] ?>,'<?= $menu['name_item'] ?>', '<?= $menu['attachment'] ?>', '<?= $menu['price'] ?>', '<?= $menu['name_category'] ?>', '<?= $menu['created_at_item'] ?>')" class="btn btn-primary mr-1"><i class="far fa-eye" data-toggle="tooltip" title="Detail"></i></button>
+                          <a href="./edit-menu.php?id=<?= $menu["id_item"] ?>" class="btn btn-primary" data-toggle="tool-tip" title="Edit">Edit</a>
+                          <a href=".. /service/delete-menu.php?id=<?= $menu["id_item"] ?>" class="btn btn-danger" data-toggle="tool-tip" title="Hapus">Hapus</a>
                           </td>
-                          <td>2018-01-20</td>
-                          <td><div class="badge badge-success">Completed</div></td>
-                          <td><a href="#" class="btn btn-secondary">Detail</a></td>
                         </tr>
-                        <tr>
-                          <td class="p-0 text-center">
-                            <div class="custom-checkbox custom-control">
-                              <input type="checkbox" data-checkboxes="mygroup" class="custom-control-input" id="checkbox-2">
-                              <label for="checkbox-2" class="custom-control-label">&nbsp;</label>
-                            </div>
-                          </td>
-                          <td>Redesign homepage</td>
-                          <td class="align-middle">
-                            <div class="progress" data-height="4" data-toggle="tooltip" title="0%">
-                              <div class="progress-bar" data-width="0"></div>
-                            </div>
-                          </td>
-                          <td>
-                            <img alt="image" src="../assets/img/avatar/avatar-1.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Nur Alpiana">
-                            <img alt="image" src="../assets/img/avatar/avatar-3.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Hariono Yusup">
-                            <img alt="image" src="../assets/img/avatar/avatar-4.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Bagus Dwi Cahya">
-                          </td>
-                          <td>2018-04-10</td>
-                          <td><div class="badge badge-info">Todo</div></td>
-                          <td><a href="#" class="btn btn-secondary">Detail</a></td>
-                        </tr>
-                        <tr>
-                          <td class="p-0 text-center">
-                            <div class="custom-checkbox custom-control">
-                              <input type="checkbox" data-checkboxes="mygroup" class="custom-control-input" id="checkbox-3">
-                              <label for="checkbox-3" class="custom-control-label">&nbsp;</label>
-                            </div>
-                          </td>
-                          <td>Backup database</td>
-                          <td class="align-middle">
-                            <div class="progress" data-height="4" data-toggle="tooltip" title="70%">
-                              <div class="progress-bar bg-warning" data-width="70"></div>
-                            </div>
-                          </td>
-                          <td>
-                            <img alt="image" src="../assets/img/avatar/avatar-1.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Rizal Fakhri">
-                            <img alt="image" src="../assets/img/avatar/avatar-2.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Hasan Basri">
-                          </td>
-                          <td>2018-01-29</td>
-                          <td><div class="badge badge-warning">In Progress</div></td>
-                          <td><a href="#" class="btn btn-secondary">Detail</a></td>
-                        </tr>
-                        <tr>
-                          <td class="p-0 text-center">
-                            <div class="custom-checkbox custom-control">
-                              <input type="checkbox" data-checkboxes="mygroup" class="custom-control-input" id="checkbox-4">
-                              <label for="checkbox-4" class="custom-control-label">&nbsp;</label>
-                            </div>
-                          </td>
-                          <td>Input data</td>
-                          <td class="align-middle">
-                            <div class="progress" data-height="4" data-toggle="tooltip" title="100%">
-                              <div class="progress-bar bg-success" data-width="100"></div>
-                            </div>
-                          </td>
-                          <td>
-                            <img alt="image" src="../assets/img/avatar/avatar-2.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Rizal Fakhri">
-                            <img alt="image" src="../assets/img/avatar/avatar-5.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Isnap Kiswandi">
-                            <img alt="image" src="../assets/img/avatar/avatar-4.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Yudi Nawawi">
-                            <img alt="image" src="../assets/img/avatar/avatar-1.png" class="rounded-circle" width="35" data-toggle="tooltip" title="Khaerul Anwar">
-                          </td>
-                          <td>2018-01-16</td>
-                          <td><div class="badge badge-success">Completed</div></td>
-                          <td><a href="#" class="btn btn-secondary">Detail</a></td>
-                        </tr>
+                        <?php endforeach; ?>
                       </table>
+                      <div class="card-body d-flex justify-content-center">
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination">
+                            <li class="page-item <?= $pageActive == 1 ? 'disabled' : '' ?>">
+                              <a class="page-link" href="?page=<?= $prev ?>&keyword=<?= $key ?>"><i class="ph ph-arrow-circle-left text-3xl px-2"></i></a>
+                            </li>
+                            <?php for ($i = 1; $i <= $countPage; $i++) : ?>
+                              <li class="page-item <?= $pageActive == $i ? 'active' : '' ?>">
+                                <a class="page-link" href="?page=<?= $i ?>&keyword=<?= $key ?>"><?= $i ?></a>
+                              </li>
+                            <?php endfor; ?>
+                            <li class="page-item <?= $pageActive == $countPage ? 'disabled' : '' ?>">
+                              <a class="page-link" href="?page=<?= $next ?>&keyword=<?= $key ?>"><i class="ph ph-arrow-circle-right text-3xl px-2"></i></a>
+                            </li>
+                          </ul>
+                        </nav>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -171,6 +160,25 @@
       </div>
       <?php include('../components/layout/footer.php'); ?>
     </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="detailModal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Detail Kategory</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <!-- <p>Modal body text goes here.</p> -->
+              </div>
+              <div class="modal-footer bg-whitesmoke br">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+              </div>
+            </div>
+          </div>
+        </div>
   </div>
 
   <!-- General JS Scripts -->
@@ -183,18 +191,43 @@
   <script src="../assets/js/stisla.js"></script>
   
   <!-- JS Libraies -->
+  <script src="../assets/modules/jquery.sparkline.min.js"></script>
+  <script src="../assets/modules/chart.min.js"></script>
+  <script src="../assets/modules/owlcarousel2/dist/owl.carousel.min.js"></script>
+  <script src="../assets/modules/summernote/summernote-bs4.js"></script>
+  <script src="../assets/modules/chocolat/dist/js/jquery.chocolat.min.js"></script>
 
   <!-- Page Specific JS File -->
+  <script src="../assets/js/page/index.js"></script>
   
   <!-- Template JS File -->
   <script src="../assets/js/scripts.js"></script>
   <script src="../assets/js/custom.js"></script>
   <script>
     $(document).ready(function() {
-      $("#search").on("keyup", function() {
-        $("#content").load("../assets/search/menu.php?keyword=" + $(this).val());
+      let debounceTimer;
+      $("#search_menu").on("keyup", function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          $("#content_menu").load("../assets/search/menu.php?keyword=" + $(this).val());
+        }, 300);
       });
     });
+
+    function modalDetail(id, name, attachment, price, category, created_at) {
+    let content = '<ul>';
+    content += `<li><strong>No Menu:</strong> ${id}</li>`;
+    content += `<li><strong>Name Menu:</strong> ${name}</li>`;
+    content += `<li><strong>Attachment:</strong> <img src="../public/img/items/${attachment}" alt="${name}" width="50" height="50" ></li>`;
+    content += `<li><strong>Price:</strong> ${price}</li>`;
+    content += `<li><strong>Kategory:</strong> ${category}</li>`;
+    content += `<li><strong>Created At:</strong> ${created_at}</li>`;
+    content += '</ul>';
+
+    $('#detailModal .modal-body').html(content);
+    $('#detailModal').modal('show');
+}
+
   </script>
 </body>
 </html>

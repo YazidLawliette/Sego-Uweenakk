@@ -1,4 +1,7 @@
 <?php 
+
+session_start();
+
 require_once __DIR__ . '/../DB/Conection.php';
 require_once __DIR__ . '/../Interface/Modelinterface.php';
 
@@ -36,14 +39,14 @@ abstract class Model extends Conection implements ModelInterface {
         return $data;
     }
 
-    public function find_data($id, $table)
+    public function find_data($id, $colomn, $table)
     {
-        $query = "SELECT * FROM $table WHERE id = $id";
+        $query = "SELECT * FROM $table WHERE {$colomn} = $id";
         $result = mysqli_query($this->db, $query);
         return $this->convert_data($result);
     }
 
-    public function update_data($id, $datas, $table)
+    public function update_data($id, $colomn, $datas, $table)
     {
         $key = array_keys($datas);
         $value = array_values($datas);
@@ -54,7 +57,7 @@ abstract class Model extends Conection implements ModelInterface {
                 $query .= " , ";
             }
         }
-        $query .= " WHERE id = $id";
+        $query .= " WHERE {$colomn} = $id";
         $result = mysqli_query($this->db, $query);
         if($result){
             return $datas;
@@ -63,10 +66,10 @@ abstract class Model extends Conection implements ModelInterface {
         }
     }
 
-    public function delete_data($id, $table)
+    public function delete_data($id, $colomn, $table)
     {
-        $query = "DELETE FROM $table WHERE id = $id";
-        $result = mysqli_query($this->db, $query);
+        $query = "DELETE FROM $table WHERE {$colomn} = $id";
+        $result = mysqli_query($this->db, $query);   
         return $result;
     }
 

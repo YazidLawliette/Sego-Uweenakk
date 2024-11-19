@@ -1,10 +1,29 @@
+<?php 
+
+require_once __DIR__ . '/../Model/Model.php';
+require_once __DIR__ . '/../Model/Category.php';
+require_once __DIR__ . '/../Model/Item.php';
+require_once __DIR__ . '/../Model/User.php';
+
+if(isset($_SESSION["full_name"])) {
+  $full_name = $_SESSION["full_name"];
+  $avatar = $_SESSION["avatar"];
+  $email = $_SESSION["email"];
+} else {
+  header("Location: ../index.php");
+}
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>Blank Page &mdash; Stisla</title>
+  <title> &mdash; Account</title>
+  <link rel="icon" href="../assets/img/favicon/logo-favicon.png">
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="../assets/modules/bootstrap/css/bootstrap.min.css">
@@ -51,7 +70,7 @@
           </div>
 
           <div class="section-body">
-            <h2 class="section-title">Hi, Admin!</h2>
+            <h2 class="section-title">Hi, <?= $full_name ?>!</h2>
             <p class="section-lead">
               Change information about yourself on this page.
             </p>
@@ -66,7 +85,7 @@
               <div class="col-12 col-md-12 col-lg-6">
                 <div class="card profile-widget">
                   <div class="profile-widget-header">
-                    <img alt="image" src="../assets/img/avatar/avatar-1.png" class="rounded-circle profile-widget-picture">
+                    <img alt="image" src="../public/img/users/<?= $avatar ?>" class="rounded-circle profile-widget-picture" width="20" height="100">
                     <div class="profile-widget-items">
                       <div class="profile-widget-item">
                         <div class="profile-widget-item-label">Penjualan</div>
@@ -86,14 +105,14 @@
                       <div class="row">
                         <div class="form-group col-12">
                           <label>Full Name</label>
-                          <input type="text" class="form-control" value="Ujang" required="">
+                          <input type="text" class="form-control" value="<?= $full_name ?>" required="">
                           <div class="invalid-feedback">
                             Please fill in the first name
                           </div>
                         </div>
                         <div class="form-group col-12">
                           <label>Email</label>
-                          <input type="email" class="form-control" value="ujang@maman.com" required="">
+                          <input type="email" class="form-control" value="<?= $email ?>" required="">
                           <div class="invalid-feedback">
                             Please fill in the email
                           </div>
